@@ -1,3 +1,10 @@
+/* Mesh Switch Implementation for Concurrent Programming in C
+ * thread.c
+ * Copyright (C) rm 2013 <raphael@marques.com>
+	 * 
+
+ */
+
 #include <stdlib.h>      // exit
 #include <stdio.h>
 #include <string.h>      // strlen
@@ -14,7 +21,7 @@
 #include "buffer.h"
 #include <arpa/inet.h>
 #include <netinet/in.h>
-//thread who is reachable for all others, to send data. It spawns a listener thread to recv data and parses it.
+
 
 void *listenT(void *argument)
 {
@@ -27,7 +34,7 @@ void *listenT(void *argument)
 	struct bufmsg *buffer = me->datap;
 	while(recv(socket, ca, 2, MSG_PEEK)>0){
 		struct paket message; /* we expect some line of text shorter than 132 chars */
-		while(fgets(&message, 132, read_line(socket)) != NULL ) 
+		while(fgets(&message, MSIZE, read_line(socket)) != NULL ) 
 		{
 			if(message.paketType == 'N'){
 

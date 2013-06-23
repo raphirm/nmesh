@@ -1,13 +1,13 @@
-main.o: main.c messagelist.h main.h conn_server.h conn_io.h thread.h \
+main.o: main.c nodelist.h main.h conn_server.h conn_io.h thread.h \
  buffer.h newConnection.h pkglisthandler.h
-pkglisthandler.o: pkglisthandler.c pkglisthandler.h messagelist.h main.h \
+pkglisthandler.o: pkglisthandler.c pkglisthandler.h nodelist.h main.h \
  conn_server.h conn_io.h thread.h buffer.h newConnection.h
-buffer.o: buffer.c messagelist.h main.h conn_server.h conn_io.h buffer.h \
+buffer.o: buffer.c nodelist.h main.h conn_server.h conn_io.h buffer.h \
  thread.h
 conn_client.o: conn_client.c
 conn_io.o: conn_io.c conn_io.h
 conn_server.o: conn_server.c
-messagelist.o: messagelist.c messagelist.h
-newConnection.o: newConnection.c messagelist.h main.h conn_server.h \
+nodelist.o: nodelist.c nodelist.h
+newConnection.o: newConnection.c nodelist.h main.h conn_server.h \
  conn_io.h thread.h buffer.h
-thread.o: thread.c messagelist.h main.h conn_server.h conn_io.h buffer.h
+thread.o: thread.c nodelist.h main.h conn_server.h conn_io.h buffer.h
