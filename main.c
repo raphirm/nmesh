@@ -10,7 +10,7 @@
 #include <string.h>      // strlen
 #include <assert.h>
 #include <unistd.h>      // getopt
-#include "messagelist.h"
+#include "nodelist.h"
 #include "main.h"
 #include "conn_server.h"
 #include "conn_io.h"     // send_all
@@ -31,6 +31,7 @@ void report_error( char* message ) {
 	fprintf( stderr, "ERROR: %s\n", message );
 }
 
+//Parse options (-z for ZIEL, -q for QUELLE and port number)
 void parse_options( int argc, char *argv[])
 {
 	char optchar;
@@ -64,9 +65,10 @@ void parse_options( int argc, char *argv[])
 	}
 }
 
-
+//Start the program
 int main(int argc, char *argv[])
 {
+	//Initialize all three important Lists: routes (Route to Ziel and Quelle), nodes (List of all Peers), pkgs (Package index)
 	struct route *routes;
 	routes = malloc(sizeof(struct route));
 	routes->zielt = NULL;
@@ -74,32 +76,33 @@ int main(int argc, char *argv[])
 	llist_t *nodes;
 	nodes = malloc(sizeof(llist_t));
 	llist_init(nodes);
-	
 	struct packetList *pkgs;
 	pkgs = msg_init(&pkgs);
-	
+	//Initialize the Serversocket (sock_fd) and Client Socket (connection_fd) which spawns when something connects.
 	int sock_fd, connection_fd;
-	pthread_t pthread;
 	extern int optind;                // from unistd.h:getopt
 
 	parse_options( argc, argv );
 	while (1)
-	{
+	{	
+		//Listen to Port (Busy Wait on Socket)
 		if( (sock_fd = listen_on_port(tcp_port) ) < 0 ) {
 			report_error("failed to listen on the port");
 			return sock_fd;
 		}
-
+		//Open Connection Back to client
 		if( (connection_fd = connect_with_client( sock_fd )) != 0) {
+			//Setup everything for new connection (That means, spawn all threads that handle the connection accordingly)
 			openNewNode(routes, nodes, pkgs, connection_fd, node_role);
 
 		
-			//start_thread
-			//parse(connection_fd, noderoot, pkgroot, routes, node_role);
+			
 		}
 		else {
+			//OOps no connection :(
 			report_error("failed to get a client connection");
 		}
+		//Free the block on the Listener Port.
 		disconnect_client( sock_fd);
 	}
 	return 0; 

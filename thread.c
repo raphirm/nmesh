@@ -3,7 +3,7 @@
 #include <string.h>      // strlen
 #include <assert.h>
 #include <unistd.h>      // getopt
-#include "messagelist.h"
+#include "nodelist.h"
 #include "main.h"
 #include "conn_server.h"
 #include "conn_io.h"     // send_all
@@ -18,7 +18,6 @@
 
 void *listenT(void *argument)
 {
-	int j = 0;
 	struct threadinfos *ti;
 	ti = (struct threadinfos *) argument;
 	short node_role = ti->node_role;
@@ -99,6 +98,7 @@ void *listenT(void *argument)
 	pthread_cond_signal(&buffer->buff_empty);
 	pthread_mutex_unlock(&buffer->mutex);
 	pthread_exit(NULL);
+	close(socket);
 }
 
 

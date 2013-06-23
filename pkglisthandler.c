@@ -5,7 +5,7 @@
 #include <string.h>      // strlen
 #include <assert.h>
 #include <unistd.h>      // getopt
-#include "messagelist.h"
+#include "nodelist.h"
 #include "main.h"
 #include "conn_server.h"
 #include "conn_io.h"     // send_all
