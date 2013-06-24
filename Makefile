@@ -22,3 +22,4 @@ clean:
 	rm test/$(TARGET)
 	rm test/$(TARGET)2
 	rm test/*.log
+	rm depends

@@ -30,8 +30,8 @@ def send_data_packet(s, target, packet_nr):
     s.sendall(packet)
     d = s.recv(132)
 
-def pipe(s, target):
-    packet_nr = random.randint(0, 100)
+def pipe(s, target, packet_nr):
+
     while True:
         data = sys.stdin.read(128)
         if data == "":
@@ -69,6 +69,7 @@ if __name__ == '__main__':
 
     send_packets_parser = subparsers.add_parser( 'pipe',         help=u'Stdin an Knoten schicken', parents=[target_port_parser])
     send_packets_parser.add_argument(            'target',       help=u'0 für Quelle 1 für Ziel',  type=int)
+    send_packets_parser.add_argument(		 'packet_nr',	 help=u'Paketnummer', 		type=int)
 
     args = parser.parse_args()
 
@@ -93,5 +94,5 @@ if __name__ == '__main__':
     elif args.command == 'pipe':
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('127.0.0.1', args.connect_port))
-        pipe(s, args.target)
+        pipe(s, args.target, args.packet_nr)
         s.close()

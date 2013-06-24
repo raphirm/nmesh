@@ -1,5 +1,11 @@
+# Copyright by Raphael Marques
 #! /bin/bash
+echo $1
+
+
 RESULTFILE=resultlog
+
+
 NODECOUNT=11
 scriptnames=( "./mesh" "./mesh2" )
 scriptcount=2
@@ -16,14 +22,29 @@ do
 	if [ $i -eq $source ];
 	then
 		echo "Source: ${scriptnames[$((RANDOM%$scriptcount))]} -q 333$i"
-		${scriptnames[$((RANDOM%$scriptcount))]}  -q 333$i &>> $RESULTFILE$i.log &
+		if [ $1 -eq 1 ]
+		then
+			${scriptnames[$((RANDOM%$scriptcount))]}  -q 333$i &	
+		else	
+			${scriptnames[$((RANDOM%$scriptcount))]}  -q 333$i &>> $RESULTFILE$i.log &
+		fi
 	elif [ $i -eq $sink ];
 	then
 		echo "Sink: ${scriptnames[$((RANDOM%$scriptcount))]} -z 333$i"
-		${scriptnames[$((RANDOM%$scriptcount))]}  -z 333$i &>> $RESULTFILE$i.log &
+		if [ $1 -eq 1 ]
+		then
+			${scriptnames[$((RANDOM%$scriptcount))]}  -z 333$i  &
+		else
+			${scriptnames[$((RANDOM%$scriptcount))]}  -z 333$i &>> $RESULTFILE$i.log &
+		fi
 	else
 		echo "Node: ${scriptnames[$((RANDOM%$scriptcount))]}  333$i"
-		${scriptnames[$((RANDOM%$scriptcount))]}  333$i  &>> $RESULTFILE$i.log &
+		if [ $1 -eq 1 ]
+		then
+			${scriptnames[$((RANDOM%$scriptcount))]}  333$i   &
+		else
+			${scriptnames[$((RANDOM%$scriptcount))]}  333$i  &>> $RESULTFILE$i.log &
+		fi
 	fi
 done
 
@@ -41,14 +62,18 @@ SECOND=$((RANDOM%$NODECOUNT))
 THIRD=$((RANDOM%$NODECOUNT))
 FOURTH=$((RANDOM%$NODECOUNT))
 
-echo "echo "first package for the network"|./util.py pipe 333$FIRST 1  "
-echo "first package for the network"|./util.py pipe 333$FIRST 1  
-echo "echo "package to another node to target"|./util.py pipe 333$SECOND 1 "
-echo "package to another node to target"|./util.py pipe 333$SECOND 1  
-echo "echo "now first to the source"|./util.py pipe 333$THIRD 0  "
-echo "now first to the source"|./util.py pipe 333$THIRD 0  
-echo "echo "now second to the source"|./util.py pipe 333$FOURTH 0 "
-echo "now second to the source"|./util.py pipe 333$FOURTH 0  
+echo "echo "first package for the network"|./util.py pipe 333$FIRST 1 11 "
+echo "first package for the network"|./util.py pipe 333$FIRST 1 11 
+
+echo "echo "next packet same route package for the network"|./util.py pipe 333$FIRST 1 12 "
+echo "next packet same route package for the network"|./util.py pipe 333$FIRST 1 12
+sleep 5
+echo "echo "same package other route, any timeout? package to another node to target"|./util.py pipe 333$SECOND 1 12"
+echo "same package other route, any timeout? package to another node to target"|./util.py pipe 333$SECOND 1 12 
+echo "echo "now first to the source"|./util.py pipe 333$THIRD 0  15 "
+echo "now first to the source"|./util.py pipe 333$THIRD 0 15 
+echo "echo "now second to the source"|./util.py pipe 333$FOURTH 0 16 "
+echo "now second to the source"|./util.py pipe 333$FOURTH 0 16 
 sleep 1
 for i in ${scriptnames[@]}
 do

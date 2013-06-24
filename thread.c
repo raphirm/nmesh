@@ -21,6 +21,7 @@
 #include "buffer.h"
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <time.h>
 
 
 void *listenT(void *argument)
@@ -49,11 +50,14 @@ void *listenT(void *argument)
 			else if(message.paketType == 'C'){
 				
 				if(msg_check(&message, ti->packages)==0){
-					msg_add(socket, &message, ti->packages);
+					long acttime;
+					time(&acttime);
+					printf("%ld is the actual time!!", acttime);
+					msg_add(socket, &message, ti->packages, acttime);
 					printf("(%i) Neues Packet empfangen mit ID %i, route vorhanden?\n", ti->port, ntohs(message.paketID));
 					if((message.target == 1 && node_role == ZIEL) || (message.target == 0 && node_role == QUELLE)){
 						printf("(%i) Am Ziel angekommen! Sende antwort für ID %i und String %s\n", ti->port, ntohs(message.paketID), message.content);
-						message.paketType = 'O';
+						message.paketType = 'O';	
 						buf_push(message, buffer);
 					}
 					else if((message.target == 1 && ti->routes->zielt != NULL) ||(message.target ==0 && ti->routes->quellet != NULL)){
@@ -64,6 +68,8 @@ void *listenT(void *argument)
 							buf_push(message, ti->routes->quellet->datap);	
 						}
 					}else{
+								printf("(%i) keine Route vorhanden, broadcaste in das Netzwerk!\n", ti->port);
+				
 						 pthread_mutex_lock(&(ti->nodes->mutex));
 						llist_node_t *curr = ti->nodes->first;
 						while(curr != NULL){
@@ -74,7 +80,6 @@ void *listenT(void *argument)
 							
 						}
 						pthread_mutex_unlock(&(ti->nodes->mutex));
-						printf("(%i) keine Route vorhanden, broadcaste in das Netzwerk!\n", ti->port);
 						
 					}
 
@@ -98,6 +103,7 @@ void *listenT(void *argument)
 						ti->routes->zielt = ti->me;
 					}
 					printf("(%i) Leite Antwort weiter mit  id %i und inhalt %s\n", ti->port, ntohs(message.paketID), message.content);
+					msg_del(&message, ti->packages);
 					buf_push(message, target->datap);
 				}
 			}
@@ -131,7 +137,7 @@ void  startsthread(void *argument)
 	int rt= pthread_create(&thread, NULL, (void*)&listenT ,(void *) ti);
 	pthread_mutex_lock(&buffer->mutex);
 	while(1){
-
+		
 		if(buffer->rd == buffer->wr && me->alive){
 			pthread_cond_wait(&buffer->buff_empty, &buffer->mutex);
 		}

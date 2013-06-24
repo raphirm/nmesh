@@ -11,6 +11,9 @@
 //Defines how big the package list is
 #define PACKAGE_LIST_MAX_ITEMS 128;
 
+#define TIMEOUT 2 //timeout in seconds
+
+//Packagestructure! 
 struct  paket
 {
  unsigned short paketID;
@@ -18,6 +21,7 @@ struct  paket
  char paketType;
  unsigned char content[MSIZE -4 ];
 };
+//THe newpackage has a special strucutre
 struct newp
 {
  unsigned char ip[4];

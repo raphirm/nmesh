@@ -23,6 +23,7 @@
 
 
 
+
 //Global Variable, defines the role of Node. Possible is HOP, ZIEL, QUELLE
 short node_role = HOP;
 
@@ -65,6 +66,35 @@ void parse_options( int argc, char *argv[])
 	}
 }
 
+//Implement the timeout
+void *timeoutcleanup(void *argument){
+	
+	struct packetList *pkgs;
+	pkgs = (struct packetList *) argument;
+	while(1){
+		//this is the actual time
+		long acttime;
+		time(&acttime);
+		//everything older than this, is too old
+		long timeouttime = acttime - TIMEOUT;
+	//	printf("%ld is actual, timeout is %ld\n", acttime, timeouttime);
+		int i;
+		//look into all elements of the list
+		for(i = 0; i < sizeof(pkgs->itm) / sizeof(struct pkgListItem); i++)
+        {		
+               if((pkgs->itm[i].msgtime < timeouttime) && (pkgs->itm[i].msgtime > 0)){
+				//   too old! delete!
+				   pkgs->itm[i].pid = -1;
+				   pkgs->itm[i].msgtime = -1;	
+			   }
+        }
+		usleep(100000*TIMEOUT); // look 10 times of timeout time if we have to clean up something
+		
+	}
+	fflush(stdout);
+	
+}
+
 //Start the program
 int main(int argc, char *argv[])
 {
@@ -81,7 +111,10 @@ int main(int argc, char *argv[])
 	//Initialize the Serversocket (sock_fd) and Client Socket (connection_fd) which spawns when something connects.
 	int sock_fd, connection_fd;
 	extern int optind;                // from unistd.h:getopt
-
+	pthread_t timecleanup;
+	//This little cleanup witch ensures that the same id is again accepted after TIMEOUT (which is default 2 seconds)
+	pthread_create(&timecleanup, NULL, (void*)&timeoutcleanup ,(void *) pkgs);
+	pthread_detach(timecleanup);
 	parse_options( argc, argv );
 	while (1)
 	{	

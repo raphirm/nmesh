@@ -60,17 +60,19 @@ int msg_check(struct paket *message, struct packetList *pkgs)
 	return ( pkgs->itm[idx].pid == message->paketID); 
 }
 
-/* Mutex nicht notwendig, da sehr nah an atomarer Funktion */
-void msg_add (int connection_fd, struct paket *message, struct packetList *pkgs){
+void msg_add (int connection_fd, struct paket *message, struct packetList *pkgs, long int time){
 	int idx= calcIdx( message);
     /* Mutex auf pkgList */
 	pkgs->itm[idx].sourceSocket= connection_fd;
 	pkgs->itm[idx].pid= message->paketID;
+	pkgs->itm[idx].msgtime = time;
 }
 
-void msg_clean ( struct packetList *pkgs){
-	
-	
+
+void msg_del(struct paket *message, struct packetList *pkgs){
+	 int idx= calcIdx( message);
+	 pkgs->itm[idx].pid == -1; 
+		
 }
 
 
