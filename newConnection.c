@@ -28,7 +28,7 @@ void  *startthread(void *argument)
 }
 
 // Create a thread for each new connection. The thread reads and write to the connection.
-void openNewNode(struct route *routes,llist_t *nodes, struct packetList *pkgs, int connection_fd, short node_role)
+void openNewNode(struct route *routes,llist_t *nodes, struct packetList *pkgs, int connection_fd, short node_role, int tcp_port)
 {
 			//Generate all resources which are important for the thread
 			pthread_t thread;
@@ -44,6 +44,7 @@ void openNewNode(struct route *routes,llist_t *nodes, struct packetList *pkgs, i
 			ti->packages = pkgs;
 			ti->routes = routes;
 			ti->node_role = node_role;
+			ti->port = tcp_port;
 			ti->me = llist_find_data (connection_fd, nodes);
 			// Create and detach thread. He will kill himself if the connection finishs.
 			pthread_create(&thread, NULL, (void*)&startthread ,(void *) ti);

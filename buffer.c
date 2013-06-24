@@ -19,7 +19,7 @@ void buf_init(struct bufmsg *buffer){
 	int i;
 	for(i = 0; i < sizeof(buffer->pkg) / sizeof(struct paket); i++)
 	{
-		buffer->pkg[i].paketID = 0;
+		buffer->pkg[i].paketID = -1;
 	}
 	}
 
@@ -40,3 +40,4 @@ void buf_push(struct paket packet, struct bufmsg *buffer){
 	pthread_mutex_unlock(&buffer->mutex);
 
 }
+

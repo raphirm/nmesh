@@ -20,6 +20,7 @@
 
 
 
+
 /* berechnet den Index im Array */
 struct packetList *msg_init(struct packetList *pkgs){
 	pkgs = malloc(sizeof(struct packetList));
@@ -28,6 +29,7 @@ struct packetList *msg_init(struct packetList *pkgs){
 	for(i = 0; i < sizeof(pkgs->itm) / sizeof(struct pkgListItem); i++)
         {
                 pkgs->itm[i].pid = -1;
+                pkgs->itm[i].msgtime = -1;
         }
 	return pkgs;
 }
@@ -36,9 +38,16 @@ int calcIdx(struct paket *message){
 	int idx= message->paketID % PACKAGE_LIST_MAX_ITEMS;
 	return idx;
 }
-int *msg_getSocket(struct packetList *pkgs, struct paket *message){
+int msg_getSocket(struct packetList *pkgs, struct paket *message){
 	int idx = calcIdx(message);
-	return &(pkgs->itm[idx].sourceSocket);
+	int sock;
+	if(pkgs->itm[idx].pid == message->paketID){
+		sock = pkgs->itm[idx].sourceSocket;
+	}
+	else{
+		sock = -1;
+	}
+	return sock;
 }
 
 	/* Prüfe ob Paket bereits in Liste existiert 
@@ -46,7 +55,7 @@ int *msg_getSocket(struct packetList *pkgs, struct paket *message){
  * */
 
 int msg_check(struct paket *message, struct packetList *pkgs)
-{	
+{	 
 	int idx= calcIdx( message);
 	return ( pkgs->itm[idx].pid == message->paketID); 
 }
@@ -57,6 +66,11 @@ void msg_add (int connection_fd, struct paket *message, struct packetList *pkgs)
     /* Mutex auf pkgList */
 	pkgs->itm[idx].sourceSocket= connection_fd;
 	pkgs->itm[idx].pid= message->paketID;
+}
+
+void msg_clean ( struct packetList *pkgs){
+	
+	
 }
 
 

@@ -43,21 +43,21 @@ void *listenT(void *argument)
 				unsigned short prt = (unsigned short) (message.content[4]<<8)|message.content[5];
 				//node_add(noderoot, ip, prt);
 				int connection_fd = open_connection_to (ip, prt);
-				openNewNode (ti->routes, ti->nodes, ti->packages, connection_fd, ti->node_role);
+				openNewNode (ti->routes, ti->nodes, ti->packages, connection_fd, ti->node_role, ti->port);
 			}
 			
 			else if(message.paketType == 'C'){
 				
 				if(msg_check(&message, ti->packages)==0){
 					msg_add(socket, &message, ti->packages);
-					printf("Neues Packet empfangen mit ID %i, route vorhanden?\n", ntohs(message.paketID));
+					printf("(%i) Neues Packet empfangen mit ID %i, route vorhanden?\n", ti->port, ntohs(message.paketID));
 					if((message.target == 1 && node_role == ZIEL) || (message.target == 0 && node_role == QUELLE)){
-						printf("Am Ziel angekommen! Sende antwort für ID %i und String %s\n", ntohs(message.paketID), message.content);
+						printf("(%i) Am Ziel angekommen! Sende antwort für ID %i und String %s\n", ti->port, ntohs(message.paketID), message.content);
 						message.paketType = 'O';
 						buf_push(message, buffer);
 					}
 					else if((message.target == 1 && ti->routes->zielt != NULL) ||(message.target ==0 && ti->routes->quellet != NULL)){
-						printf("Route schon vorhanden\n");
+						printf("(%i) Route schon vorhanden\n", ti->port);
 						if(message.target ==1){
 							buf_push(message, ti->routes->zielt->datap);	
 						}else{
@@ -74,28 +74,34 @@ void *listenT(void *argument)
 							
 						}
 						pthread_mutex_unlock(&(ti->nodes->mutex));
-						printf("keine Route vorhanden, broadcaste in das Netzwerk!\n");
+						printf("(%i) keine Route vorhanden, broadcaste in das Netzwerk!\n", ti->port);
 						
 					}
 
 				}else{
-					printf("Packet mit id %i schon gesehen, verwerfen!\n",  ntohs(message.paketID));
+					printf("(%i) Packet mit id %i schon gesehen, verwerfen!\n",  ti->port, ntohs(message.paketID));
 	
 
-				}
+}
 
 			}else if(message.paketType == 'O'){
-				int *sket = msg_getSocket(ti->packages, &message);
-				llist_node_t *target = llist_find_data (*sket, ti->nodes);
-				if(message.target == 0) {
-
-					ti->routes->quellet = ti->me;
+				
+				int sket = msg_getSocket(ti->packages, &message);
+				if(sket < 0){
+					printf("(%i)We don't have a socket for this PID  %i! Drop Reply", ti->port, ntohs(message.paketID));
 				}else{
-					ti->routes->zielt = ti->me;
+					llist_node_t *target = llist_find_data (sket, ti->nodes);
+					if(message.target == 0) {
+
+						ti->routes->quellet = ti->me;
+					}else{
+						ti->routes->zielt = ti->me;
+					}
+					printf("(%i) Leite Antwort weiter mit  id %i und inhalt %s\n", ti->port, ntohs(message.paketID), message.content);
+					buf_push(message, target->datap);
 				}
-				printf("Leite Antwort weiter mit  id %i und inhalt %s\n", ntohs(message.paketID), message.content);
-				buf_push(message, target->datap);
 			}
+			fflush(stdout);
 
 		}
 	}

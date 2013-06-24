@@ -43,5 +43,6 @@ struct threadinfos
 	struct packetList *packages;
 	struct route *routes;
 	short node_role;
+	int port;
 	
 };

@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		//Open Connection Back to client
 		if( (connection_fd = connect_with_client( sock_fd )) != 0) {
 			//Setup everything for new connection (That means, spawn all threads that handle the connection accordingly)
-			openNewNode(routes, nodes, pkgs, connection_fd, node_role);
+			openNewNode(routes, nodes, pkgs, connection_fd, node_role, tcp_port);
 
 		
 			

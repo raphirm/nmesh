@@ -7,6 +7,7 @@
 struct pkgListItem {
 	unsigned short pid;
 	int sourceSocket;
+	long int msgtime;
 };
 struct packetList{
 	struct pkgListItem itm[MESSAGE_SIZE];
