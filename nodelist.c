@@ -7,13 +7,14 @@
  *
  ********************************************************
  * llist_threads.h --
- *
+ * heavily edited by Raphael Marques (raphael@marques.com)
  * Include file for linked list with threads support
  */
 #include "nodelist.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+//initialize linked list
 int llist_init (llist_t *llistp) 
 {	
   int rtn;
@@ -23,7 +24,7 @@ int llist_init (llist_t *llistp)
     fprintf(stderr, "pthread_mutex_init error %d",rtn), exit(1);
   return 0;
 }
-
+//insert node
 int llist_insert_data (int index, pthread_t *thread, struct bufmsg *datap, llist_t *llistp, bool alive) 
 {
   llist_node_t *cur, *prev, *new;
@@ -50,6 +51,8 @@ int llist_insert_data (int index, pthread_t *thread, struct bufmsg *datap, llist
 
   return 0;
 }
+
+//remove a node
 int llist_remove_data(int index, llist_t *llistp) 
 {
  
@@ -76,6 +79,7 @@ int llist_remove_data(int index, llist_t *llistp)
 
   return 0;
 }
+//find node
 llist_node_t  *llist_find_data(int index, llist_t *llistp ) 
 {
   llist_node_t *cur, *prev;
@@ -97,6 +101,7 @@ llist_node_t  *llist_find_data(int index, llist_t *llistp )
   return NULL;
  
 }
+//NOT USED, showing list
 int llist_show(llist_t *llistp)
 {
   llist_node_t *cur;

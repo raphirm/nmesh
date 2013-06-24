@@ -21,7 +21,7 @@ struct  paket
  char paketType;
  unsigned char content[MSIZE -4 ];
 };
-//THe newpackage has a special strucutre
+//The newpackage has a special strucutre
 struct newp
 {
  unsigned char ip[4];
@@ -30,7 +30,7 @@ struct newp
 };
 
 
-
+//if we know the ziel und quelle, lets define it here.
 struct route
 {
 	llist_node_t *zielt;
@@ -39,7 +39,7 @@ struct route
 
 
 
-
+//make sure the thread knows everything he needs.
 struct threadinfos
 {
 	llist_t *nodes;

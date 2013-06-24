@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 #include <time.h>
 
-
+//This is the 2. thread, it just listens for new packets.
 void *listenT(void *argument)
 {
 	struct threadinfos *ti;
@@ -33,33 +33,41 @@ void *listenT(void *argument)
 	int socket = me->index;
 	char *ca = malloc(2);
 	struct bufmsg *buffer = me->datap;
+	//<=0 == Closed or error
 	while(recv(socket, ca, 2, MSG_PEEK)>0){
 		struct paket message; /* we expect some line of text shorter than 132 chars */
 		while(fgets(&message, MSIZE, read_line(socket)) != NULL ) 
 		{
+			//What to do with a new Package?
 			if(message.paketType == 'N'){
-
+				// Make a new Connection
 				char ip[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, &(message.content[0]), ip, INET_ADDRSTRLEN);
 				unsigned short prt = (unsigned short) (message.content[4]<<8)|message.content[5];
-				//node_add(noderoot, ip, prt);
 				int connection_fd = open_connection_to (ip, prt);
+					//Give the Connection a new Thread
 				openNewNode (ti->routes, ti->nodes, ti->packages, connection_fd, ti->node_role, ti->port);
 			}
 			
 			else if(message.paketType == 'C'){
-				
+				//What to do with a C package? Lets look if we already know this package
 				if(msg_check(&message, ti->packages)==0){
+					//OK Never seen!
 					long acttime;
 					time(&acttime);
 					printf("%ld is the actual time!!", acttime);
+					// Add it, now we know the package
 					msg_add(socket, &message, ti->packages, acttime);
 					printf("(%i) Neues Packet empfangen mit ID %i, route vorhanden?\n", ti->port, ntohs(message.paketID));
+					//OK are we the destination of this package?
 					if((message.target == 1 && node_role == ZIEL) || (message.target == 0 && node_role == QUELLE)){
+						//YES! Give a awnser back!
 						printf("(%i) Am Ziel angekommen! Sende antwort für ID %i und String %s\n", ti->port, ntohs(message.paketID), message.content);
 						message.paketType = 'O';	
 						buf_push(message, buffer);
 					}
+					// Do we know allready a route to the destination?
+					
 					else if((message.target == 1 && ti->routes->zielt != NULL) ||(message.target ==0 && ti->routes->quellet != NULL)){
 						printf("(%i) Route schon vorhanden\n", ti->port);
 						if(message.target ==1){
@@ -68,7 +76,9 @@ void *listenT(void *argument)
 							buf_push(message, ti->routes->quellet->datap);	
 						}
 					}else{
-								printf("(%i) keine Route vorhanden, broadcaste in das Netzwerk!\n", ti->port);
+						
+						//OK we dont know anything, Broadcast *muahaha*
+							printf("(%i) keine Route vorhanden, broadcaste in das Netzwerk!\n", ti->port);
 				
 						 pthread_mutex_lock(&(ti->nodes->mutex));
 						llist_node_t *curr = ti->nodes->first;
@@ -84,6 +94,7 @@ void *listenT(void *argument)
 					}
 
 				}else{
+					//we already saw the package, throw it away!
 					printf("(%i) Packet mit id %i schon gesehen, verwerfen!\n",  ti->port, ntohs(message.paketID));
 	
 
@@ -150,9 +161,7 @@ void  startsthread(void *argument)
 			close(socket);	
 			pthread_exit(NULL);
 		}
-		//mutex lock
-		//buffer consumer/worker
-		//mutex unlock
+
 		struct paket *message;
 		message = buf_pull(buffer);
 		send_all(socket, message, sizeof(*message));

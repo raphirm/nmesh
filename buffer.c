@@ -1,3 +1,10 @@
+/* Mesh Switch Implementation for Concurrent Programming in C
+ * main.c
+ * Copyright (C) rm 2013 <raphael@marques.com>
+	 * 
+
+ */
+
 #include <stdlib.h>      // exit
 #include <stdio.h>
 #include <string.h>      // strlen
@@ -11,6 +18,8 @@
 #include "thread.h"
 #include <pthread.h>
 #include <stdbool.h>
+
+//Initialize all importen Mutex things.
 void buf_init(struct bufmsg *buffer){
 	pthread_mutex_init(&(buffer->mutex), NULL);
 	pthread_cond_init(&(buffer->buff_empty), NULL);
@@ -22,7 +31,7 @@ void buf_init(struct bufmsg *buffer){
 		buffer->pkg[i].paketID = -1;
 	}
 	}
-
+//Read one message out of the buffer
 struct paket *buf_pull(struct bufmsg *buffer){
 	int rd = buffer->rd;
 	buffer->rd = (buffer->rd + 1) % MAX_BUF_SIZE;
@@ -31,7 +40,7 @@ struct paket *buf_pull(struct bufmsg *buffer){
 
 
 }
-
+//Write a message into the buffer
 void buf_push(struct paket packet, struct bufmsg *buffer){
 	pthread_mutex_lock(&buffer->mutex);
 	buffer->pkg[buffer->wr] = packet;

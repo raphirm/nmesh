@@ -1,9 +1,17 @@
+/* Mesh Switch Implementation for Concurrent Programming in C
+ * nostelist.h
+ * Copyright (C) rm 2013 <raphael@marques.com>
+	 * 
+
+ */
+ 
 #ifndef __MESSAGELIST_H__
 #define __MESSAGELIST_H__
 
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
+
 
 typedef struct llist_node {
   int index;

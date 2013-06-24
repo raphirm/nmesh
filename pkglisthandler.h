@@ -1,3 +1,11 @@
+/* Mesh Switch Implementation for Concurrent Programming in C
+ * pkglisthandler.h
+ * Copyright (C) rm 2013 <raphael@marques.com>
+	 * 
+
+ */
+ 
+
 #ifndef __PKGLISTHANDLER_H__
 #define __PKGLISTHANDLER_H__
 #define MESSAGE_SIZE 1024

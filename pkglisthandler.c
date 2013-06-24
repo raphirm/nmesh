@@ -1,3 +1,11 @@
+/* Mesh Switch Implementation for Concurrent Programming in C
+ * pkglisthandler.c
+ * Copyright (C) rm 2013 <raphael@marques.com>
+	 * 
+
+ */
+ 
+
 #include "pkglisthandler.h"
 
 #include <stdlib.h>      // exit
