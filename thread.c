@@ -141,6 +141,7 @@ void  startsthread(void *argument)
 			me->index = socket;
 			llist_remove_data (socket, nodes);
 			pthread_mutex_unlock(&buffer->mutex);
+			close(socket);	
 			pthread_exit(NULL);
 		}
 		//mutex lock

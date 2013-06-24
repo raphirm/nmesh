@@ -36,15 +36,19 @@ do
 		done
 
 done
+FIRST=$((RANDOM%$NODECOUNT))
+SECOND=$((RANDOM%$NODECOUNT))
+THIRD=$((RANDOM%$NODECOUNT))
+FOURTH=$((RANDOM%$NODECOUNT))
 
-echo "echo "first package for the network"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 1  "
-echo "first package for the network"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 1  
-echo "echo "package to another node to target"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 1 "
-echo "package to another node to target"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 1  
-echo "echo "now first to the source"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 0  "
-echo "now first to the source"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 0  
-echo "echo "now second to the source"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 0 "
-echo "now second to the source"|./util.py pipe 333$((RANDOM%$NODECOUNT)) 0  
+echo "echo "first package for the network"|./util.py pipe 333$FIRST 1  "
+echo "first package for the network"|./util.py pipe 333$FIRST 1  
+echo "echo "package to another node to target"|./util.py pipe 333$SECOND 1 "
+echo "package to another node to target"|./util.py pipe 333$SECOND 1  
+echo "echo "now first to the source"|./util.py pipe 333$THIRD 0  "
+echo "now first to the source"|./util.py pipe 333$THIRD 0  
+echo "echo "now second to the source"|./util.py pipe 333$FOURTH 0 "
+echo "now second to the source"|./util.py pipe 333$FOURTH 0  
 sleep 1
 for i in ${scriptnames[@]}
 do
