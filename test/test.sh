@@ -1,5 +1,5 @@
 #! /bin/bash
-RESULTFILE=resultlog.log
+RESULTFILE=resultlog
 NODECOUNT=11
 scriptnames=( "./mesh" "./mesh2" )
 scriptcount=2
@@ -16,14 +16,14 @@ do
 	if [ $i -eq $source ];
 	then
 		echo "Source: ${scriptnames[$((RANDOM%$scriptcount))]} -q 333$i"
-		${scriptnames[$((RANDOM%$scriptcount))]}  -q 333$i &
+		${scriptnames[$((RANDOM%$scriptcount))]}  -q 333$i &>> $RESULTFILE$i.log &
 	elif [ $i -eq $sink ];
 	then
 		echo "Sink: ${scriptnames[$((RANDOM%$scriptcount))]} -z 333$i"
-		${scriptnames[$((RANDOM%$scriptcount))]}  -z 333$i &
+		${scriptnames[$((RANDOM%$scriptcount))]}  -z 333$i &>> $RESULTFILE$i.log &
 	else
 		echo "Node: ${scriptnames[$((RANDOM%$scriptcount))]}  333$i"
-		${scriptnames[$((RANDOM%$scriptcount))]}  333$i   &
+		${scriptnames[$((RANDOM%$scriptcount))]}  333$i  &>> $RESULTFILE$i.log &
 	fi
 done
 
