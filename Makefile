@@ -19,4 +19,6 @@ depends:
 
 clean:
 	rm ./$(TARGET) *.o 
+	rm test/$(TARGET)
+	rm test/$(TARGET)2
 
